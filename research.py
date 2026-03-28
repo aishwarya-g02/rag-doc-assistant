@@ -7,17 +7,19 @@ def read_document(filepath):
         reader = PdfReader(filepath)
         pages = []
         for i, page in enumerate(reader.pages):
+            if i >= 5:
+                break
             text = page.extract_text()
-            if text:
+            if text and text.strip():
                 pages.append({
                     "page_number": i + 1,
-                    "content": text
+                    "content": text[:1000]
                 })
         return pages
     else:
         with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
             content = f.read()
-            return [{"page_number": 1, "content": content}]
+            return [{"page_number": 1, "content": content[:5000]}]
 
 def ask_ai(question, pages):
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -25,22 +27,12 @@ def ask_ai(question, pages):
     document_text = ""
     for page in pages:
         document_text += f"\n[Page {page['page_number']}]\n{page['content']}\n"
-        document_text = document_text[:8000]
+
+    document_text = document_text[:5000]
     
     prompt = f"""You are a documentation research assistant.
 Answer the user's question based on the document below.
-
-Your response must follow this exact format:
-
- Found on Page: [mention exact page number]
-
- Exact Content:
-[copy the exact relevant text from that page]
-
- Summary:
-[explain the answer in simple words]
-
-If the answer spans multiple pages mention all page numbers.
+Always mention the page number where you found the answer.
 If the answer is not in the document, say "I could not find that in the document."
 
 Document:
