@@ -7,8 +7,6 @@ def read_document(filepath):
         reader = PdfReader(filepath)
         pages = []
         for i, page in enumerate(reader.pages):
-            if i >= 10:
-                break
             text = page.extract_text()
             if text:
                 pages.append({
