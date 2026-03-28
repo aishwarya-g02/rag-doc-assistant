@@ -25,6 +25,7 @@ def ask_ai(question, pages):
     document_text = ""
     for page in pages:
         document_text += f"\n[Page {page['page_number']}]\n{page['content']}\n"
+        document_text = document_text[:8000]
     
     prompt = f"""You are a documentation research assistant.
 Answer the user's question based on the document below.
