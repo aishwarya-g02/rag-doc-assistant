@@ -7,7 +7,7 @@ from app.research import ask_ai, read_document
 load_dotenv()
 
 st.set_page_config(page_title="RAG Doc Assistant", page_icon="📄")
-st.title("📄 RAG Documentation Research Assistant")
+st.title("RAG Documentation Research Assistant")
 st.write("Upload any PDF and ask questions about it!")
 
 uploaded_file = st.file_uploader("Upload your PDF", type="pdf")
@@ -23,7 +23,7 @@ if uploaded_file is not None:
 
     question = st.text_input("Ask a question about your document:")
 
-    if st.button("🔍 Ask AI"):
+    if st.button("Ask AI"):
         if question:
             with st.spinner("AI is thinking..."):
                 response = ask_ai(question, pages)
