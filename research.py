@@ -7,19 +7,19 @@ def read_document(filepath):
         reader = PdfReader(filepath)
         pages = []
         for i, page in enumerate(reader.pages):
-            if i >= 5:
+            if i >= 3:
                 break
             text = page.extract_text()
             if text and text.strip():
                 pages.append({
                     "page_number": i + 1,
-                    "content": text[:1000]
+                    "content": text[:500]
                 })
         return pages
     else:
         with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
             content = f.read()
-            return [{"page_number": 1, "content": content[:5000]}]
+            return [{"page_number": 1, "content": content[:2000]}]
 
 def ask_ai(question, pages):
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -28,22 +28,22 @@ def ask_ai(question, pages):
     for page in pages:
         document_text += f"\n[Page {page['page_number']}]\n{page['content']}\n"
 
-    document_text = document_text[:5000]
+    document_text = document_text[:2000]
     
-    prompt = f"""You are a documentation research assistant.
-Answer the user's question based on the document below.
-Always mention the page number where you found the answer.
-If the answer is not in the document, say "I could not find that in the document."
+    prompt = f"""Answer this question based only on this document:
 
 Document:
 {document_text}
 
-Question: {question}"""
+Question: {question}
+
+Answer:"""
 
     response = client.chat.completions.create(
-       model="gemma2-9b-it",
+        model="gemma2-9b-it",
         messages=[
             {"role": "user", "content": prompt}
-        ]
+        ],
+        max_tokens=500
     )
     return response.choices[0].message.content
