@@ -7,13 +7,13 @@ def read_document(filepath):
         reader = PdfReader(filepath)
         pages = []
         for i, page in enumerate(reader.pages):
-            if i >= 10:
-                break
+           if i >= 3:
+              break
             text = page.extract_text()
             if text:
                 pages.append({
                     "page_number": i + 1,
-                    "content": text
+                    "content": text[:500]
                 })
         return pages
     else:
@@ -27,6 +27,7 @@ def ask_ai(question, pages):
     document_text = ""
     for page in pages:
         document_text += f"\n[Page {page['page_number']}]\n{page['content']}\n"
+        document_text = document_text[:2000]
     
     prompt = f"""You are a documentation research assistant.
 Answer the user's question based on the document below.
@@ -50,7 +51,7 @@ Document:
 Question: {question}"""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+       model="gemma2-9b-it",
         messages=[
             {"role": "user", "content": prompt}
         ]
